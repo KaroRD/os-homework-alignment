@@ -1,0 +1,129 @@
+ASSIGNMENT 1
+
+karapeta@ubuntu-aua-os:~/alignment$ ./a.out
+Sizes of data types:
+sizeof int: 4 bytes
+sizeof char: 1 bytes
+sizeof double: 8 bytes
+sizeof short: 2 bytes
+Addresses of variables:
+&a (int)    = 0x7ffcb484484c
+&b (char)   = 0x7ffcb4844849
+&pi (double)= 0x7ffcb4844850
+&s (short)  = 0x7ffcb484484a
+
+
+we can see that each memory address has some place in memory and it is assigned by rules. If you look the at the last 2 chars in addresses, since only that 2 are different. So in case int it is 4c which 76 in decimal system, 76 is divisable by 4, thats why int is 4 bytes. in case of CHAR it has no meaning cause char is only one byte it can bes stored anywere. for short 4a, it is 74 which is divisable by 2 soo 2 bytes and for double hex 50 is decimal 80 which is divisable by 8.
+
+Sizes of data types:
+sizeof int: 4 bytes
+sizeof char: 1 bytes
+sizeof double: 8 bytes
+sizeof short: 2 bytes
+Addresses of variables:
+&a (int)    = 0x7ffd8d01f24c
+&b (char)   = 0x7ffd8d01f249
+&pi (double)= 0x7ffd8d01f250
+&s (short)  = 0x7ffd8d01f24a
+
+ASSIGNMENT 2
+
+#include <stdio.h>
+
+struct struct_1 {
+        char a;
+        int b;
+        double c;
+};
+
+struct struct_2 {
+        char c;
+        double b;
+        int a;
+};
+
+int main() {
+        struct struct_1 s1;
+        struct struct_2 s2;
+
+        printf("size of struct_1: %ld bytes\n", sizeof(s1));
+        printf("address of char: %p\n", (void*)&s1.a);
+        printf("address of int: %p\n", (void*)&s1.b);
+        printf("address of double: %p\n", (void*)&s1.c);
+
+        printf("size of struct_2: %ld bytes\n", sizeof(s2));
+        printf("address of char: %p\n", (void*)&s2.c);
+        printf("address of double: %p\n", (void*)&s2.b);
+        printf("address of int: %p\n", (void*)&s2.a);
+
+        return 0;
+} 
+
+
+SOO basically why in this case reordering matters, just because, now double cames after char, and the char at the start causes more internal padding before the double. In such cases, putting larger types first (like double, then int, then char) helps the compiler minimize unnecessary padding and makes the structure more memory-efficient. SO for the second Struct (char, double, int)
+1 byte (char) + 7 bytes (padding before double) + 8 bytes (double) + 4 bytes (int) + 4 bytes (end padding) = 24 bytes
+
+size of struct_1: 16 bytes
+address of char: 0x7fff2c6c2020
+address of int: 0x7fff2c6c2024
+address of double: 0x7fff2c6c2028
+size of struct_2: 24 bytes
+address of char: 0x7fff2c6c2030
+address of double: 0x7fff2c6c2038
+address of int: 0x7fff2c6c2040
+
+ASSIGNMENT 3
+
+
+karapeta@ubuntu-aua-os:~/alignment$ cat assignment3.c
+#include <stdio.h>
+
+struct struct_1 {
+        char c;
+        int a;
+        double d;
+};
+
+#pragma pack(1)
+struct struct_2 {
+    char c;
+    int a;
+    double d;
+};
+#pragma pack()
+
+
+int main() {
+        struct struct_1 s1;
+        struct struct_2 s2;
+
+
+        printf("size of struct_1: %ld bytes\n", sizeof(s1));
+        printf("address of char: %p\n", (void*)&s1.c);
+        printf("address of int: %p\n", (void*)&s1.a);
+        printf("address of double: %p\n", (void*)&s1.d);
+
+
+        printf("size of struct_2: %ld bytes\n", sizeof(s2));
+        printf("address of char: %p\n", (void*)&s2.c);
+        printf("address of int: %p\n", (void*)&s2.a);
+        printf("address of double: %p\n", (void*)&s2.d);
+
+        return 0;
+}
+
+Now, we have 2 structs, 1 with pragma another without, basicaaly what pragma does it tell compiler to no add padding, thats why pragma struct costs only 13 bytes, 1 + 4 + 8. 
+#pragma pack is a compiler directive that controls how the compiler aligns fields in a struct. Normally, the compiler adds padding bytes to align each field for faster CPU access, which can increase the struct’s size. Using #pragma pack(1) removes this padding and packs the fields tightly together, reducing the struct’s size but potentially slowing access or causing unaligned memory issues.
+
+in cinclusion pragma will help to save some space but it will cost some time cause slows access and and also causes unalignes memory access for example double can be stored  in address not divisable by 8.
+
+size of struct_1: 16 bytes
+address of char: 0x7ffd62f73160
+address of int: 0x7ffd62f73164
+address of double: 0x7ffd62f73168
+size of struct_2: 13 bytes
+address of char: 0x7ffd62f73153
+address of int: 0x7ffd62f73154
+address of double: 0x7ffd62f73158
+
+
